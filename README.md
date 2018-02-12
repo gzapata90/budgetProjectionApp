@@ -1,8 +1,10 @@
 # budgetProjection
 Budget projection app for CS 428 Winter 2018
 
-to run locally run:
+to install:
 $ npm install
+
+to run locally run:
 $ ng serve
 
 To host the website follow the steps in this video:
