@@ -1,1 +1,17 @@
 /* You can add global styles to this file, and also import other style files */
+html {
+    font-size: 62.5%; /* Now 10px = 1rem! */
+}
+
+body{
+    background: linear-gradient(#4be1f2, #0012d8);
+    height: 100%;
+    margin: 0;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    font-family: 'Roboto', sans-serif;
+}
+
+h1{
+    color: white;
+}
