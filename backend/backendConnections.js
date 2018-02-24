@@ -5,16 +5,19 @@ admin.initializeApp({
 });
 
 var db = admin.firestore();
+var express = require('express');
+var router = express.Router();
 
 function createUser(username,password,email)
 {
 	firebase.auth().createUserWithEmailAndPassword(email,password).then(function() {
 	
 	//create the information in the database
-	var docRef = db.collection('users').doc(username);
+	var user = firebase.auth().currentUser.uid
+	var docRef = db.collection('users').doc(user);
 	var setUser = docRef.set({
-		uid: '2', //need to figure out a way to increment this for each use
-		name: username
+		uid: user, 
+		name: email
 	});
 	
 }
