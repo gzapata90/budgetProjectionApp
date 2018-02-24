@@ -5,6 +5,7 @@ to install:
 $ npm install
 
 to run locally run:
+$ npm install -g @angular/cli (just for the first time)
 $ ng serve
 
 To host the website follow the steps in this video:
