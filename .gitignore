@@ -33,7 +33,7 @@ node_modules
 npm-debug.log
 testem.log
 /typings
-
+budgetappAdminKey.json
 # e2e
 /e2e/*.js
 /e2e/*.map
