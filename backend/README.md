@@ -15,3 +15,8 @@ To run locally:
 
 If you don't care about that, you can just run `npm start` in this folder after you've installed the dependencies.
 
+The heroku app dashboard is here (for those with access): https://dashboard.heroku.com/apps/budget-projection-app
+
+It runs here: https://budget-projection-app.herokuapp.com/
+
+
