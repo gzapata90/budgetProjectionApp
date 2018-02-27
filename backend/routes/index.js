@@ -8,6 +8,7 @@ if (fs.existsSync('budgetappAdminKey.json')) {
   serviceAccount  = require('../budgetappAdminKey.json'); //different path since it is from this file, not where the code is running
 }
 else if(process.env.PROJECT_ID) {
+  //We're assuming that if one of the env vars is set, they'll all be set
   serviceAccount = {
     projectId: process.env.PROJECT_ID,
     clientEmail: process.env.CLIENT_EMAIL,
@@ -31,22 +32,26 @@ admin.initializeApp({
 });
 
 var db = admin.firestore();
+
 /* GET home page. */
 router.get('/', function(req, res, next) {
+  //This is basically here so that we can check to make sure the app is running still
   res.status(200).send("<html><body><h1>Hello!</h1></body></html>");
 });
 
 router.post('/createUser', function(req,res,next) {
-  admin.auth().createUser({
-    email: req.body.email,
-    password: req.body.password
-  })
-    .then(function(userRecord) {
-      console.log("Successfully created new user:", userRecord.uid);
-    })
-    .catch(function(error) {
-      console.log("error creating new user:", error);
-    })
+  //This should be updated to create a budget and starter account for the user
+
+  // admin.auth().createUser({
+  //   email: req.body.email,
+  //   password: req.body.password
+  // })
+  //   .then(function(userRecord) {
+  //     console.log("Successfully created new user:", userRecord.uid);
+  //   })
+  //   .catch(function(error) {
+  //     console.log("error creating new user:", error);
+  //   })
 });
 
 
