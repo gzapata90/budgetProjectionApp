@@ -1,7 +1,30 @@
+var fs = require('fs');
 var express = require('express');
 var router = express.Router();
 var admin = require('firebase-admin');
-var serviceAccount = require('../budgetappAdminKey.json');
+
+var serviceAccount;
+if (fs.existsSync('budgetappAdminKey.json')) {
+  serviceAccount  = require('../budgetappAdminKey.json'); //different path since it is from this file, not where the code is running
+}
+else if(process.env.PROJECT_ID) {
+  serviceAccount = {
+    projectId: process.env.PROJECT_ID,
+    clientEmail: process.env.CLIENT_EMAIL,
+    privateKey: process.env.PRIVATE_KEY.replace(/\\n/g, '\n'),
+    type: process.env.TYPE,
+    privateKeyId: process.env.PRIVATE_KEY_ID,
+    clientId: process.env.CLIENT_ID,
+    authUri: process.env.AUTH_URI,
+    tokenUri: process.env.TOKEN_URI,
+    authProviderX509CertUrl: process.env.AUTH_PROVIDER_X509_CERT_URL,
+    clientX509CertIrl: process.env.CLIENT_X509_CERT_URL
+  }
+}
+else {
+  //You done messed up.
+  serviceAccount = {};
+}
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
