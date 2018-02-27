@@ -1,15 +1,16 @@
 var express = require('express');
 var router = express.Router();
 var admin = require('firebase-admin');
-var serviceAccount = require('budgetappAdminKey.json');
+var serviceAccount = require('../budgetappAdminKey.json');
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
 });
+
 var db = admin.firestore();
 /* GET home page. */
 router.get('/', function(req, res, next) {
-  res.render('index', { title: 'Express' });
+  res.status(200).send("<html><body><h1>Hello!</h1></body></html>");
 });
 
 router.post('/createUser', function(req,res,next) {
