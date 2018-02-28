@@ -44,7 +44,23 @@ router.get('/', function(req,res,next) {
 //to return all of the budgets that this user is associated with
 //it will return an array of maps (for the MVP it should be a one element array)
 router.get('/userID/budgets',function(req,res,next) {
-
+	var budgetsRef = db.collection('budgets').where("ownerUID", "==", req.body.userID);
+	var budgetsArray = []; // this array will hold all of the budgets of this user
+	budgetsRef.get().then(function(querySnapshot) {
+		querySnapshot.forEach(function(doc) {
+			budgetsArray.push(doc.data());
+		});
+	}).catch(function(error) {
+		console.log("Error getting documents: ", error);
+	}); //end of budget collection 
+	
+	//if the first branch executes we have a problem
+	if (budgetsArray.length < 1) {
+		console.log("BudgetsArray was 0, we have a problem with either not creating a budget for this user, not saving the UID correctly in the budget, not retrieving correctly, or deleted a budget without deleteing a user");
+	}
+	else {
+		return budgetArray; //This is the happy case
+	}
 });
 //This route expects the caller to pass in the budgetID of the budget 
 //that they would like for us to retrieve
@@ -82,7 +98,7 @@ router.get('/budgetID/transactionID', function(req,res,next) {
 router.get('/budgetID/transactions', function(req,res,next) {
 	var transactionsRef =db.collection('budgets').doc(req.body.budgetID).collection('transactions');
 	
-	var transactionsArray[]; //the array of transactions that will be returned
+	var transactionsArray = []; //the array of transactions that will be returned
 
 	transactionRef.get().then(function(querySnapshot){
 		querySnapshot.forEach(function(doc) {
