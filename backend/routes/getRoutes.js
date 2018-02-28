@@ -72,16 +72,15 @@ router.get('/budgetID', function(req,res,next) {
   docRef.get().then(function(doc) {
       if (doc.exists) { 
 	//document was found
-      	console.log("retrieved budget succesfully")
+      	console.log("retrieved budget succesfully");
 	return doc.data(); //send back the data as a json object
       } else {
       	//document was not found
-	console.log("No document found with that budgetID")
-      }
-      
+	console.log("No document found with that budgetID");
+      }  
  }).catch(function(error) {
      console.log("Error Getting document: ", error); 
- })
+ });
 });
 
 //This route expects the caller to pass in a budgetID and a transactionID
@@ -89,7 +88,17 @@ router.get('/budgetID', function(req,res,next) {
 //they would like to be retrieved
 //The transaction data will be returned as a map
 router.get('/budgetID/transactionID', function(req,res,next) {
+	var transactionRef = db.collection('budgets').doc(req.body.budgetID).collection('transactions').doc(req.body.transactionID)
 
+	transactionRef.get().then(function(doc) {
+		if (doc.exists) {
+			console.log("retrieved transaction succesfully");
+		} else {
+			console.log("No document found with that transactionID")
+		}
+	}).catch(function(error) {
+		console.log("Error getting document: ". error);
+	});
 });
 
 //This route expects the caller to pass in a budgetID of the budget they
@@ -134,5 +143,5 @@ router.get('/budgetID/accountID', function(req, res, next) {
 
 	}).catch(function(error) {
 		console.log("Error Getting document: ", error);
-	})
+	});
 });
