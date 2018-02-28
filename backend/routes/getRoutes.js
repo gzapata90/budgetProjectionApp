@@ -74,6 +74,14 @@ router.get('/budgetID/transactionID', function(req,res,next) {
 //The list of transactions will be returned as an array of transaction objects in a map
 router.get('/budgetID/transactions', function(req,res,next) {
 	var transactionsRef =db.collection('budgets').doc(req.body.budgetID).collection('transactions');
+	
+	var transactionsArray[]; //the array of transactions that will be returned
+
+	transactionRef.get().then(function(querySnapshot){
+		querySnapshot.forEach(function(doc) {
+			
+		});
+	});
 });
 
 //This route expects the caller to pass in an accountID and a budgetID which
