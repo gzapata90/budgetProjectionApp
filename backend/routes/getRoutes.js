@@ -45,7 +45,7 @@ router.get('/budgetID', function(req,res,next) {
   docRef.get().then(function(doc) {
       if (doc.exists) { 
 	//document was found
-      	console.log("retrieved doc succesfully")
+      	console.log("retrieved budget succesfully")
 	return doc.data(); //send back the data as a json object
       } else {
       	//document was not found
@@ -54,6 +54,7 @@ router.get('/budgetID', function(req,res,next) {
       
  }).catch(function(error) {
      console.log("Error Getting document: ", error); 
+ })
 });
 
 router.get('/budgetID/transactionID', function(req,res,next) {
@@ -65,5 +66,19 @@ router.get('/budgetID/transactions', function(req,res,next) {
 });
 
 router.get('/budgetID/accountID', function(req, res, next) {
+	var accountRef=db.collection('budgets').doc(req.body.budgetID).collection('accounts').doc(req.body.accountID);
+	
+	accountRef.get().then(function(doc) {
+		if(doc.exists) {
+			//account was found
+			console.log("Retrieved account succesfully")
+			return doc.data(); //send the data back as a json object
+		} else {
+			//document not found
+			console.log("No document was found with that accountID")
+		}
 
+	}).catch(function(error) {
+		console.log("Error Getting document: ", error);
+	})
 });
