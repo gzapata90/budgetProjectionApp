@@ -98,13 +98,22 @@ router.get('/budgetID/transactionID', function(req,res,next) {
 router.get('/budgetID/transactions', function(req,res,next) {
 	var transactionsRef =db.collection('budgets').doc(req.body.budgetID).collection('transactions');
 	
-	var transactionsArray = []; //the array of transactions that will be returned
+	var transactionArray = []; //the array of transactions that will be returned
 
 	transactionRef.get().then(function(querySnapshot){
 		querySnapshot.forEach(function(doc) {
-			
+			transactionArray.push(doc.data);			
 		});
+	})
+	.catch(function(error) {
+		console.log("Error getting documents: ", error);
 	});
+
+	if (transactionArray.length < 1) {
+		console.log("No transactions found, either no transactions have been added, transactions were not retrieved correctlly, or The budgetID was wrong"); 
+	}
+	
+	return transactionArray;
 });
 
 //This route expects the caller to pass in an accountID and a budgetID which
