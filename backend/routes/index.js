@@ -5,6 +5,7 @@ var serviceAccount = require('budgetappAdminKey.json');
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
+  databaseURL:'https://console.firebase.google.com/u/0/project/budgetprojectionapp/database/firestore/data~2F.firestore.io'
 });
 var db = admin.firestore();
 /* GET home page. */
