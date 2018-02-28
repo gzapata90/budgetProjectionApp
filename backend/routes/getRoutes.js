@@ -39,6 +39,13 @@ router.get('/', function(req,res,next) {
   res.status(200).send('<html><body><h1>Hello</h1></body></html>');
 });
 
+
+//This route expects the caller to pass in the userID so that we are able
+//to return all of the budgets that this user is associated with
+//it will return an array of maps (for the MVP it should be a one element array)
+router.get('/userID/budgets',function(req,res,next) {
+
+});
 //This route expects the caller to pass in the budgetID of the budget 
 //that they would like for us to retrieve
 //it then takes that ID and acceses the database and returns the data on that 
