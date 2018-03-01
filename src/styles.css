@@ -23,6 +23,7 @@ input{
 input:focus,
 select:focus,
 textarea:focus,
-button:focus {
+button:focus,
+.menu-item:focus {
     outline: none;
 }
