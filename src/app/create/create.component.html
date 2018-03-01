@@ -3,22 +3,22 @@
   <br>
   <form novalidate class="simple-form">
     <label>
-      <input placeholder="Email" type="email" ng-model="user.email" />
+      <input placeholder="Email" type="email" #email />
     </label>
     <br>
     <label>
-      <input placeholder="Password" type="password" ng-model="user.password" />
+      <input placeholder="Password" type="password" #password1 />
     </label>
     <br>
     <label>
-      <input placeholder="Repeat Password" type="password" ng-model="user.password" />
+      <input placeholder="Repeat Password" type="password" #password2 />
     </label>
     <br>
-    <button disabled="disabled">Create</button>
     <br>
     <br>
     <a [routerLink]="['/login']">
       Already have an account?
     </a>
   </form>
+  <button (click)="register(email.value, password1.value, password2.value)">Create</button>
 </div>

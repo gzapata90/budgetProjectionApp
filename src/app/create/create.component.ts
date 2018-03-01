@@ -1,4 +1,6 @@
 import { Component, OnInit } from '@angular/core';
+import { AuthService } from '../core/auth.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-create',
@@ -7,9 +9,29 @@ import { Component, OnInit } from '@angular/core';
 })
 export class CreateComponent implements OnInit {
 
-  constructor() { }
+  constructor(private authSvc: AuthService, private router: Router) { }
 
   ngOnInit() {
+  }
+
+  register(email: string, password1: string, password2: string) {
+
+    if (!(password1 === password2)) {
+      // Can implement custom handler here
+      alert('Passwords don\'t match');
+      return;
+    }
+
+    console.log(`attempting registration {${email}, ${password1}}`);
+
+    this.authSvc.register(email, password1)
+      .then(userId => {
+        console.log('registered');
+        this.router.navigate([`home/${userId}`]);
+      })
+      .catch(err => {
+        alert(err);
+      });
   }
 
 }
