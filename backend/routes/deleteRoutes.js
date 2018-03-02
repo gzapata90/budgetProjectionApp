@@ -43,7 +43,15 @@ router.get('/', function(req,res,next) {
 //be deleted from, and the transactionID of the transaction that needs to be deleted
 //it will return true if the transaction is deleted, false otherwise
 router.delete('/budgetID/transactionID', function(req,res,next) {
+	var transactionRef = db.collection('budgets').doc(req.body.budgetID).collection('transactions').doc(req.body.budgetID);
 
+	transactionRef.delete().then(function() {
+		console.log("Document successfully deleted!");
+		return true;
+	}).catch(function(error) {
+		console.error("Error deleteing document: ", error);
+	});
+	return false;
 });
 
 //This route expects the caller to pass in the budgetID of the budget that needs to be

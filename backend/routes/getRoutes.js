@@ -69,7 +69,7 @@ router.get('/userID/budgets',function(req,res,next) {
 router.get('/budgetID', function(req,res,next) {
   var budgetRef = db.collection('budgets').doc(req.body.budgetID);
   
-  docRef.get().then(function(doc) {
+  budgetRef.get().then(function(doc) {
       if (doc.exists) { 
 	//document was found
       	console.log("retrieved budget succesfully");
