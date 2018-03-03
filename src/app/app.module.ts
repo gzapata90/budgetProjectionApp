@@ -11,6 +11,7 @@ import { environment } from '../environments/environment';
 import { LoginComponent } from './login/login.component';
 import { CreateComponent } from './create/create.component';
 import { HomeComponent } from './home/home.component';
+import { CoreModule } from './core/core.module';
 
 const appRoutes: Routes = [
   {path: 'login', component: LoginComponent},
@@ -31,6 +32,7 @@ const appRoutes: Routes = [
     AngularFireModule.initializeApp(environment.firebase),
     AngularFireDatabaseModule,
     RouterModule.forRoot(appRoutes),
+    CoreModule,
     ChartsModule
   ],
   providers: [],
