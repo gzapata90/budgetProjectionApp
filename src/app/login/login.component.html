@@ -11,9 +11,10 @@
     </label>
     <br>
     <br><br>
+  </form>
+  <button (click)="login(email.value, password.value)">Login</button>
+  <br>
     <a [routerLink]="['/create']">
       Don't have an account?
     </a>
-  </form>
-  <button (click)="login(email.value, password.value)">Login</button>
 </div>

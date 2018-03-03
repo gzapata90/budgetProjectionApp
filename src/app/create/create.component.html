@@ -16,9 +16,11 @@
     <br>
     <br>
     <br>
-    <a [routerLink]="['/login']">
-      Already have an account?
-    </a>
   </form>
   <button (click)="register(email.value, password1.value, password2.value)">Create</button>
+  <br>
+  <a [routerLink]="['/login']">
+    Already have an account?
+  </a>
+
 </div>
