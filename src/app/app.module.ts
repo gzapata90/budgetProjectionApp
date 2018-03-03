@@ -1,5 +1,6 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
+import { ChartsModule } from 'ng2-charts';
 import {AngularFireModule} from 'angularfire2';
 import { Routes, RouterModule } from '@angular/router';
 import {AngularFireDatabaseModule} from 'angularfire2/database';
@@ -10,6 +11,7 @@ import { environment } from '../environments/environment';
 import { LoginComponent } from './login/login.component';
 import { CreateComponent } from './create/create.component';
 import { HomeComponent } from './home/home.component';
+import { CoreModule } from './core/core.module';
 import { ErrorComponent } from './error/error.component';
 
 const appRoutes: Routes = [
@@ -34,6 +36,8 @@ const appRoutes: Routes = [
     AngularFireModule.initializeApp(environment.firebase),
     AngularFireDatabaseModule,
     RouterModule.forRoot(appRoutes),
+    CoreModule,
+    ChartsModule
   ],
   providers: [],
   bootstrap: [AppComponent]

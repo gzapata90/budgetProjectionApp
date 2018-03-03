@@ -1,1 +1,14 @@
-<p>Welcome {{userName}}!</p>
+<div class="home-wrap">
+	<h1>Account Balance: ${{account.balance}}</h1>
+	<div style="width: 100%;">
+	  <canvas
+	      baseChart
+	      [chartType]="'line'"
+	      [datasets]="chartData"
+	      [labels]="chartLabels"
+	      [options]="chartOptions"
+	      [legend]="true"
+	      (chartClick)="onChartClick($event)">
+	  </canvas>
+	</div>
+</div>

@@ -17,6 +17,9 @@ button {
     margin-top: 2rem;
     text-decoration: none;
     border: none;
+    width: 90%;
+    max-width: 30rem;
+    margin: 0 auto;
   }
   
 button:hover {

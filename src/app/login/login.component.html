@@ -3,17 +3,18 @@
   <br>
   <form novalidate class="simple-form">
     <label>
-      <input placeholder="Email" type="email" ng-model="user.email" />
+      <input placeholder="Email" type="email" #email />
     </label>
     <br />
     <label>
-      <input placeholder="Password" type="password" ng-model="user.email" />
+      <input placeholder="Password" type="password" #password />
     </label>
     <br>
-    <button disabled="disabled">Login</button>
     <br><br>
+  </form>
+  <button (click)="login(email.value, password.value)">Login</button>
+  <br>
     <a [routerLink]="['/create']">
       Don't have an account?
     </a>
-  </form>
 </div>
