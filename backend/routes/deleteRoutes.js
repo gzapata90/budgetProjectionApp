@@ -59,5 +59,60 @@ router.delete('/budgetID/transactionID', function(req,res,next) {
 //This function will return true if it is deleted correctly and false otherwise
 router.delete('/budgetID', function(req,res,next) {
 
+	function deleteQueryBatch(db, query,batchSize, resolve, reject) {
+		query.get().then((snapshot => {
+			if (snapshot.size == 0) {
+				return 0;
+			}
+			var batch = db.batch();
+			snapshot.docs.forEach((doc) => {
+				batch.delete(doc.ref);
+			});
+			return batch.commit().then(() => {
+				return snapshot.size;
+			});
+		}).then((numDeleted) => {
+			if (numDeleted === 0) {
+				resolve();
+				return;
+			}
+			process.nextTick(() => {
+				deleteQueryBatch(db, query, batchSize, resolve, reject)
+			});
+		}).catch(reject);
+	};
+
+	function deleteCollection(db, collectionPath, batchSize) {
+		var query = collectionRef.orderBy('__name__').limit(batchSize);
+		return new Promise((resolve, reject) => {
+			deleteQueryBatch(db, query, batchSize, resolve, reject);
+		});
+	};
+
+	const batchSize =10;
+	//variables to each of the different things we need to delete
+	var budgetRef = db.collection('budgets').doc(req.body.budgetID);
+	var transactionsRef = db.collection('budgets').doc(req.body.budgetID).collection('transactions');
+	var accountRef = db.collection('budgets').doc(req.body.budgetID).collection('accounts');
+
+	//deleting the transaction
+	//probably need some sort of testing for this
+	deleteCollection(db, transactionsRef, batchSize);
+	deleteCollection(db, accountsRef, batchSize);
+
+	//delete the acctual budget
+	/*I am leaving the code to delete the budget itself commented out so that we can test to make sure taht the collections are getting deleted correctly and not losing the budget that they are connected to, once we have tested to make sure taht the collections are deleted un comment this code and test to make sure that the budget gets deleted correctly
+	budgetRef.delete();
+	budgetRef.get().then(doc => {
+		if( !doc.exists) {
+			console.log('Delete was succesful');
+		} else {
+			console.log('There was an error deleting');
+		}.catch(err => {
+			console.log('Error getting document: ', err); 
+		});
+	});
+	*/
+
 });
 module.exports = router;
