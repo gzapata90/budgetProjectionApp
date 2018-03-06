@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { NavigationEnd, ActivatedRoute, Router } from '@angular/router';
 
 @Component({
   selector: 'app-root',
@@ -6,5 +7,18 @@ import { Component } from '@angular/core';
   styleUrls: ['./app.component.css']
 })
 export class AppComponent {
-  title = 'Budget Projection App';
+  title = 'Budge';
+  user;
+  constructor(private route: Router) {
+    this.route.events
+      .subscribe((event) => {
+        if (event instanceof NavigationEnd) {
+          if (route.url == '/login' || route.url == '/create'){
+            document.querySelector('#main-app').className = 'title-only';
+          } else {
+            document.querySelector('#main-app').className = '';
+          }
+        }
+      });
+  }
 }
