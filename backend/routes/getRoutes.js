@@ -151,6 +151,25 @@ router.get('/budgetID/accountID', function(req, res, next) {
 //It will return a list of transactions corresponding to the date range that
 //is given
 router.get('/budgetID/transactionRange/', function(req, res, next) {
+	var transactionRef = db.collection('budgets'.doc(req.body.budgetID).collection('transactions');
 
+	var transactionArray = [];
+	
+	transactionRef.where("Start date",'>=',req.body,start_Date).get()
+	.then(function(querySnapshot) {
+		querySnapshot.forEach(function(doc) {
+			//doc should be a map
+			var testEnd = doc.get("End date");
+			if ( testEnd <= req.body.end_Date)
+			{
+				transactionArray.push(doc.data());
+			}
+		});
+	})
+	.catch(function(error) {
+		console.log("Error getting documents: ",error);
+	});
+
+	return transactionArray;
 });
 module.exports = router;
