@@ -145,4 +145,12 @@ router.get('/budgetID/accountID', function(req, res, next) {
 		console.log("Error Getting document: ", error);
 	});
 });
+
+//This route expects the caller to pass in a budgetID and a start 
+//and end date for what date range they want to access transactions from.
+//It will return a list of transactions corresponding to the date range that
+//is given
+router.get('/budgetID/transactionRange/', function(req, res, next) {
+
+});
 module.exports = router;
