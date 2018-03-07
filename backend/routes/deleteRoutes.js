@@ -34,7 +34,7 @@ else {
   //You done messed up.
   serviceAccount = {};
 }
-
+//This is a middleware function to make sure that the user is authenticated correctly
 router.use(function (req, res, next) {
 	if (!admin.auth().verifyIdToken(req.header.Authorization)) return next('router');
 	next();
