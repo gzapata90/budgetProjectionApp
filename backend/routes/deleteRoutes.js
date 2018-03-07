@@ -76,6 +76,7 @@ router.delete('/budgetID', function(req,res,next) {
 				resolve();
 				return;
 			}
+			//recurse on the next process tick to avoid exploding stack
 			process.nextTick(() => {
 				deleteQueryBatch(db, query, batchSize, resolve, reject)
 			});
@@ -89,7 +90,7 @@ router.delete('/budgetID', function(req,res,next) {
 		});
 	};
 
-	const batchSize =10;
+	const batchSize =10; //arbitrary batchSize can be changed as needed
 	//variables to each of the different things we need to delete
 	var budgetRef = db.collection('budgets').doc(req.body.budgetID);
 	var transactionsRef = db.collection('budgets').doc(req.body.budgetID).collection('transactions');
