@@ -1,0 +1,36 @@
+input{
+    border-radius: 1rem;
+    height: 4rem;
+    width: 90%;
+    max-width: 30rem;
+    margin-top: 2rem;
+    border: none;
+}
+
+button {
+    border-radius: 28px;
+    font-family: Arial;
+    color: #ffffff;
+    font-size: 20px;
+    background: #47de8e;
+    padding: 10px 20px 10px 20px;
+    margin-top: 2rem;
+    text-decoration: none;
+    border: none;
+    width: 90%;
+    max-width: 30rem;
+    margin: 0 auto;
+  }
+  
+button:hover {
+    background: #00cc70;
+    cursor: pointer;
+    text-decoration: none;
+}
+
+.login {
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    height: 80vh;
+}
