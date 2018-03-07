@@ -35,6 +35,11 @@ else {
   serviceAccount = {};
 }
 
+router.use(function (req, res, next) {
+	if (!admin.auth().verifyIdToken(req.header.Authorization)) return next('router');
+	next();
+})
+
 router.get('/', function(req,res,next) {
   res.status(200).send('<html><body><h1>Hello</h1></body></html>');
 });
