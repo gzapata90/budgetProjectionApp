@@ -1,143 +1,103 @@
-var fs = require('fs');
-var express = require('express');
-var router = express.Router();
-var admin = require('firebase-admin');
-var serviceAccount = require('budgetappAdminKey.json');
-
-admin.initalizeApp({
-  credential: admin.credential.cert(serviceAccount),
-  databaseURL:'https://console.firebase.google.com/u/0/project/budgetprojectionapp/database/firestore/data~2F.firestore.io'
-});
-
-var db = admin.firestore();
-
-var servuceAccount;
-if (fs.existsSync('budgetappAdminKey.json')) {
-  serviceAccount  = require('../budgetappAdminKey.json'); //different path since it is from this file, not where the code is running
-}
-else if(process.env.PROJECT_ID) {
-  //We're assuming that if one of the env vars is set, they'll all be set
-  serviceAccount = {
-    projectId: process.env.PROJECT_ID,
-    clientEmail: process.env.CLIENT_EMAIL,
-    privateKey: process.env.PRIVATE_KEY.replace(/\\n/g, '\n'),
-    type: process.env.TYPE,
-    privateKeyId: process.env.PRIVATE_KEY_ID,
-    clientId: process.env.CLIENT_ID,
-    authUri: process.env.AUTH_URI,
-    tokenUri: process.env.TOKEN_URI,
-    authProviderX509CertUrl: process.env.AUTH_PROVIDER_X509_CERT_URL,
-    clientX509CertIrl: process.env.CLIENT_X509_CERT_URL
-  }
-}
-else {
-  //You done messed up.
-  serviceAccount = {};
-}
-//This is a middleware function to make sure that the user has been authenticated before giving him acces to the database
-router.use(function (req, res, next) {
-	if (!admin.auth().verifyIdToken(req.header.Authorization)) return next('router');
-	next();
-})
-
-router.get('/', function(req,res,next) {
-  res.status(200).send('<html><body><h1>Hello</h1></body></html>');
-});
-
 
 //This route expects the caller to pass in the userID so that we are able
 //to return all of the budgets that this user is associated with
 //it will return an array of maps (for the MVP it should be a one element array)
-router.get('/userID/budgets',function(req,res,next) {
-	var budgetsRef = db.collection('budgets').where("ownerUID", "==", req.body.userID);
+// router.get('/userID/budgets',
+var getBudgets = function (req, res, next) {
+	var budgetsRef = req.db.collection('budgets').where("ownerUID", "==", req.body.userID);
 	var budgetsArray = []; // this array will hold all of the budgets of this user
-	budgetsRef.get().then(function(querySnapshot) {
-		querySnapshot.forEach(function(doc) {
+	budgetsRef.get().then(function (querySnapshot) {
+		querySnapshot.forEach(function (doc) {
 			budgetsArray.push(doc.data());
 		});
-	}).catch(function(error) {
+		//if the first branch executes we have a problem
+		if (budgetsArray.length < 1) {
+			console.log("BudgetsArray was 0, we have a problem with either not creating a budget for this user, not saving the UID correctly in the budget, not retrieving correctly, or deleted a budget without deleteing a user");
+		}
+		else {
+			console.log("Made it to the return!")
+			return res.status(200).json(budgetsArray);
+			// return budgetsArray; //This is the happy case
+		}
+
+	}).catch(function (error) {
 		console.log("Error getting documents: ", error);
 	}); //end of budget collection 
-	
-	//if the first branch executes we have a problem
-	if (budgetsArray.length < 1) {
-		console.log("BudgetsArray was 0, we have a problem with either not creating a budget for this user, not saving the UID correctly in the budget, not retrieving correctly, or deleted a budget without deleteing a user");
-	}
-	else {
-		return budgetArray; //This is the happy case
-	}
-});
+
+};
 //This route expects the caller to pass in the budgetID of the budget 
 //that they would like for us to retrieve
 //it then takes that ID and acceses the database and returns the data on that 
 //budget as a map
-router.get('/budgetID', function(req,res,next) {
-  var budgetRef = db.collection('budgets').doc(req.body.budgetID);
-  
-  budgetRef.get().then(function(doc) {
-      if (doc.exists) { 
-	//document was found
-      	console.log("retrieved budget succesfully");
-	return doc.data(); //send back the data as a json object
-      } else {
-      	//document was not found
-	console.log("No document found with that budgetID");
-      }  
- }).catch(function(error) {
-     console.log("Error Getting document: ", error); 
- });
-});
+// router.get('/budgetID', 
+var getBudget = function (req, res, next) {
+	var budgetRef = req.db.collection('budgets').doc(req.body.budgetID);
+	budgetRef.get().then(function (doc) {
+		if (doc.exists) {
+			//document was found
+			console.log("retrieved budget succesfully");
+			return doc.data(); //send back the data as a json object
+		} else {
+			//document was not found
+			console.log("No document found with that budgetID");
+		}
+	}).catch(function (error) {
+		console.log("Error Getting document: ", error);
+	});
+};
 
 //This route expects the caller to pass in a budgetID and a transactionID
 //these are the IDs of a specific transaction in a specific budget that
 //they would like to be retrieved
 //The transaction data will be returned as a map
-router.get('/budgetID/transactionID', function(req,res,next) {
-	var transactionRef = db.collection('budgets').doc(req.body.budgetID).collection('transactions').doc(req.body.transactionID)
+// router.get('/budgetID/transactionID', 
+var getTransaction = function (req, res, next) {
+	var transactionRef = req.db.collection('budgets').doc(req.body.budgetID).collection('transactions').doc(req.body.transactionID)
 
-	transactionRef.get().then(function(doc) {
+	transactionRef.get().then(function (doc) {
 		if (doc.exists) {
 			console.log("retrieved transaction succesfully");
 		} else {
 			console.log("No document found with that transactionID")
 		}
-	}).catch(function(error) {
-		console.log("Error getting document: ". error);
+	}).catch(function (error) {
+		console.log("Error getting document: ".error);
 	});
-});
+};
 
 //This route expects the caller to pass in a budgetID of the budget they
 //would like to retrieve all of the transactions for
 //The list of transactions will be returned as an array of transaction objects in a map
-router.get('/budgetID/transactions', function(req,res,next) {
-	var transactionsRef =db.collection('budgets').doc(req.body.budgetID).collection('transactions');
-	
+// router.get('/budgetID/transactions', 
+var getTransactions = function (req, res, next) {
+	var transactionsRef = req.db.collection('budgets').doc(req.body.budgetID).collection('transactions');
+
 	var transactionArray = []; //the array of transactions that will be returned
 
-	transactionRef.get().then(function(querySnapshot){
-		querySnapshot.forEach(function(doc) {
-			transactionArray.push(doc.data);			
+	transactionsRef.get().then(function (querySnapshot) {
+		querySnapshot.forEach(function (doc) {
+			transactionArray.push(doc.data);
 		});
+		console.log("Made it here");
+		if (transactionArray.length < 1) {
+			console.log("No transactions found, either no transactions have been added, transactions were not retrieved correctlly, or The budgetID was wrong");
+		}
+		return transactionArray;
 	})
-	.catch(function(error) {
-		console.log("Error getting documents: ", error);
-	});
-
-	if (transactionArray.length < 1) {
-		console.log("No transactions found, either no transactions have been added, transactions were not retrieved correctlly, or The budgetID was wrong"); 
-	}
-	
-	return transactionArray;
-});
+		.catch(function (error) {
+			console.log("Error getting documents: ", error);
+		});
+};
 
 //This route expects the caller to pass in an accountID and a budgetID which
 //it will thean use to access the specified account from the specified budget
 //and return the information for that specific account as a map
-router.get('/budgetID/accountID', function(req, res, next) {
-	var accountRef=db.collection('budgets').doc(req.body.budgetID).collection('accounts').doc(req.body.accountID);
-	
-	accountRef.get().then(function(doc) {
-		if(doc.exists) {
+// router.get('/budgetID/accountID', 
+var getAccount = function (req, res, next) {
+	var accountRef = req.db.collection('budgets').doc(req.body.budgetID).collection('accounts').doc(req.body.accountID);
+
+	accountRef.get().then(function (doc) {
+		if (doc.exists) {
 			//account was found
 			console.log("Retrieved account succesfully")
 			return doc.data(); //send the data back as a json object
@@ -146,35 +106,65 @@ router.get('/budgetID/accountID', function(req, res, next) {
 			console.log("No document was found with that accountID")
 		}
 
-	}).catch(function(error) {
+	}).catch(function (error) {
 		console.log("Error Getting document: ", error);
 	});
-});
+};
 
 //This route expects the caller to pass in a budgetID and a start 
 //and end date for what date range they want to access transactions from.
 //It will return a list of transactions corresponding to the date range that
 //is given
-router.get('/budgetID/transactionRange/', function(req, res, next) {
-	var transactionRef = db.collection('budgets').doc(req.body.budgetID).collection('transactions');
+// router.get('/budgetID/transactionRange/', 
+var getTransactionRange = function (req, res, next) {
+	var transactionRef = req.db.collection('budgets').doc(req.body.budgetID).collection('transactions');
 
 	var transactionArray = [];
-	
-	transactionRef.where("Start date",'>=',req.body,start_Date).get()
-	.then(function(querySnapshot) {
-		querySnapshot.forEach(function(doc) {
-			//doc should be a map
-			var testEnd = doc.get("End date");
-			if ( testEnd <= req.body.end_Date)
-			{
-				transactionArray.push(doc.data());
-			}
+
+	transactionRef.where("Start date", '>=', req.query.startDate).get()
+		.then(function (querySnapshot) {
+			querySnapshot.forEach(function (doc) {
+				//doc should be a map
+				var testEnd = doc.get("End date");
+				if (testEnd <= req.query.endDate) {
+					transactionArray.push(doc.data());
+				}
+			});
+		})
+		.catch(function (error) {
+			console.log("Error getting documents: ", error);
 		});
-	})
-	.catch(function(error) {
-		console.log("Error getting documents: ",error);
-	});
 
 	return transactionArray;
-});
-module.exports = router;
+};
+
+var userIDParam = function (req, res, next, id) {
+	req.body.userID = id;
+	next();
+}
+
+var budgetIDParam = function (req, res, next, id) {
+	req.body.budgetID = id;
+	next();
+}
+var accountIDParam = function (req, res, next, id) {
+	req.body.accountID = id;
+	next();
+}
+var transactionIDParam = function (req, res, next, id) {
+	req.body.transactionID = id;
+	next();
+}
+
+module.exports = {
+	getBudgets,
+	getBudget,
+	getTransactions,
+	getTransaction,
+	getAccount,
+	getTransactionRange,
+	budgetIDParam,
+	accountIDParam,
+	userIDParam,
+	transactionIDParam
+};
