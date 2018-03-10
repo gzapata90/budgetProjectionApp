@@ -1,75 +1,38 @@
-var fs = require('fs');
-var express = require('express');
-var router = express.Router();
-var admin = require('firebase-admin');
-var serviceAccount = require('budgetappAdminKey.json');
 
-admin.initalizeApp({
-  credential: admin.credential.cert(serviceAccount),
-  databaseURL:'https://console.firebase.google.com/u/0/project/budgetprojectionapp/database/firestore/data~2F.firestore.io'
-});
 
-var db = admin.firestore();
 
-var servuceAccount;
-if (fs.existsSync('budgetappAdminKey.json')) {
-  serviceAccount  = require('../budgetappAdminKey.json'); //different path since it is from this file, not where the code is running
-}
-else if(process.env.PROJECT_ID) {
-  //We're assuming that if one of the env vars is set, they'll all be set
-  serviceAccount = {
-    projectId: process.env.PROJECT_ID,
-    clientEmail: process.env.CLIENT_EMAIL,
-    privateKey: process.env.PRIVATE_KEY.replace(/\\n/g, '\n'),
-    type: process.env.TYPE,
-    privateKeyId: process.env.PRIVATE_KEY_ID,
-    clientId: process.env.CLIENT_ID,
-    authUri: process.env.AUTH_URI,
-    tokenUri: process.env.TOKEN_URI,
-    authProviderX509CertUrl: process.env.AUTH_PROVIDER_X509_CERT_URL,
-    clientX509CertIrl: process.env.CLIENT_X509_CERT_URL
-  }
-}
-else {
-  //You done messed up.
-  serviceAccount = {};
-}
-//This is a middleware function to make sure that the user is authenticated correctly
-router.use(function (req, res, next) {
-	if (!admin.auth().verifyIdToken(req.header.Authorization)) return next('router');
-	next();
-})
-
-router.get('/', function(req,res,next) {
-  res.status(200).send('<html><body><h1>Hello</h1></body></html>');
-});
 
 //This route expects the caller to pass in the budgetID of the budget that needs to 
 //be deleted from, and the transactionID of the transaction that needs to be deleted
 //it will return true if the transaction is deleted, false otherwise
-router.delete('/budgetID/transactionID', function(req,res,next) {
-	var transactionRef = db.collection('budgets').doc(req.body.budgetID).collection('transactions').doc(req.body.budgetID);
+// router.delete('/budgetID/transactionID', 
+var deleteTransaction = function(req,res,next) {
+	var transactionRef = req.db.collection('budgets').doc(req.body.budgetID).collection('transactions').doc(req.body.budgetID);
 
 	transactionRef.delete().then(function() {
 		console.log("Document successfully deleted!");
-		return true;
+		res.status(200);
+		return;
 	}).catch(function(error) {
-		console.error("Error deleteing document: ", error);
+		console.error("Error deleting document: ", error);
+		res.status(500);
+		return;
 	});
 	return false;
-});
+};
 
 //This route expects the caller to pass in the budgetID of the budget that needs to be
 //deleted. The budget and all subsequent accounts and transactions will be delted as well.
 //This function will return true if it is deleted correctly and false otherwise
-router.delete('/budgetID', function(req,res,next) {
+// router.delete('/budgetID', 
+var deleteBudget = function(req,res,next) {
 
 	function deleteQueryBatch(db, query,batchSize, resolve, reject) {
-		query.get().then((snapshot => {
+		query.get().then((snapshot) => {
 			if (snapshot.size == 0) {
 				return 0;
 			}
-			var batch = db.batch();
+			var batch = req.db.batch();
 			snapshot.docs.forEach((doc) => {
 				batch.delete(doc.ref);
 			});
@@ -85,8 +48,8 @@ router.delete('/budgetID', function(req,res,next) {
 			process.nextTick(() => {
 				deleteQueryBatch(db, query, batchSize, resolve, reject)
 			});
-		}).catch(reject);
-	};
+		}).catch(reject)
+	}
 
 	function deleteCollection(db, collectionPath, batchSize) {
 		var query = collectionRef.orderBy('__name__').limit(batchSize);
@@ -95,30 +58,38 @@ router.delete('/budgetID', function(req,res,next) {
 		});
 	};
 
-	const batchSize =10; //arbitrary batchSize can be changed as needed
+	const batchSize = 10; //arbitrary batchSize can be changed as needed
 	//variables to each of the different things we need to delete
-	var budgetRef = db.collection('budgets').doc(req.body.budgetID);
-	var transactionsRef = db.collection('budgets').doc(req.body.budgetID).collection('transactions');
-	var accountRef = db.collection('budgets').doc(req.body.budgetID).collection('accounts');
+	var budgetRef = req.db.collection('budgets').doc(req.body.budgetID);
+	var transactionsRef = req.db.collection('budgets').doc(req.body.budgetID).collection('transactions');
+	var accountRef = req.db.collection('budgets').doc(req.body.budgetID).collection('accounts');
 
 	//deleting the transaction
 	//probably need some sort of testing for this
-	deleteCollection(db, transactionsRef, batchSize);
-	deleteCollection(db, accountsRef, batchSize);
-
-	//delete the acctual budget
-	/*I am leaving the code to delete the budget itself commented out so that we can test to make sure taht the collections are getting deleted correctly and not losing the budget that they are connected to, once we have tested to make sure taht the collections are deleted un comment this code and test to make sure that the budget gets deleted correctly
-	budgetRef.delete();
-	budgetRef.get().then(doc => {
-		if( !doc.exists) {
-			console.log('Delete was succesful');
-		} else {
-			console.log('There was an error deleting');
-		}.catch(err => {
-			console.log('Error getting document: ', err); 
-		});
+	var transactionsPromise = deleteCollection(req.db, transactionsRef, batchSize);
+	var accountsPromise = deleteCollection(req.db, accountsRef, batchSize);
+	Promise.all([transactionsPromise, accountsPromise]).then(function(results) {
+		res.status(200);
+		return;
 	});
+	/*I am leaving the code to delete the budget itself commented out so that we can test to make sure taht the collections are getting deleted correctly and not losing the budget that they are connected to, once we have tested to make sure taht the collections are deleted un comment this code and test to make sure that the budget gets deleted correctly
+
+		//delete the acctual budget
+		budgetRef.delete();
+		budgetRef.get().then(doc => {
+			if( !doc.exists) {
+				console.log('Delete was succesful');
+			} else {
+				console.log('There was an error deleting');
+			}.catch(err => {
+				console.log('Error getting document: ', err); 
+			});
+		});
+	})
 	*/
 
-});
-module.exports = router;
+};
+module.exports = {
+	deleteBudget,
+	deleteTransaction
+};
