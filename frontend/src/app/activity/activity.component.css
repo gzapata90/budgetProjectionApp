@@ -1,0 +1,46 @@
+.activity-transaction-list {
+	list-style: none;
+	margin: 0 20px;
+	padding: 0;
+	background: #efefef;
+    border: solid 1px #afafaf;
+    border-radius: 20px;
+}
+
+.activity-transaction-list-item-label {
+	font-size: 15px;
+}
+
+.activity-transaction-list-item {
+	height: 36px;
+}
+
+.activity-transaction-list li:last-child span {
+	border-bottom: none;
+}
+
+.activity-transaction-list-item span {
+	width: calc(20% - 1px);
+    display: block;
+    float: left;
+    border-right: solid 1px #afafaf;
+    border-bottom: solid 1px #afafaf;
+    height: 35px;
+    line-height: 35px;
+}
+
+.activity-transaction-list-item span:last-child {
+	border-right: none;
+}
+
+.activity-transaction-list-item span p {
+	margin: 0;
+}
+
+.activity-withdraw {
+	color: red;
+}
+
+.activity-deposit {
+	color: green;
+}

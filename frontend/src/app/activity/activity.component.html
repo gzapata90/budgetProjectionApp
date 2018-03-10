@@ -1,0 +1,11 @@
+<div class="activity-wrap">
+	<h1>Account Balance: ${{account.balance}}</h1>
+	<div style="width: 100%;">
+		<ul class="activity-transaction-list">
+			<li class="activity-transaction-list-item activity-transaction-list-item-label"><span class="activity-accountId">Account Id</span><span class="activity-description">Description</span><span class="activity-date">Date</span><span class="activity-withdraw">Withdraw</span><span class="activity-deposit">Deposit</span></li>
+			<li class="activity-transaction-list-item" *ngFor="let transaction of transactions;">
+				<span class="activity-accountId">{{transaction.accountID}}</span><span class="activity-description">{{transaction.description}}</span><span class="activity-date">{{transaction.date}}</span><span class="activity-withdraw"><p *ngIf="transaction.type === 'withdraw'">${{transaction.amount}}</p></span><span class="activity-deposit"><p  *ngIf="transaction.type === 'deposit'">${{transaction.amount}}</p></span>
+			</li>
+		</ul>
+	</div>
+</div>
