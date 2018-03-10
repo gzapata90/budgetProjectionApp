@@ -156,7 +156,7 @@ router.get('/budgetID/accountID', function(req, res, next) {
 //It will return a list of transactions corresponding to the date range that
 //is given
 router.get('/budgetID/transactionRange/', function(req, res, next) {
-	var transactionRef = db.collection('budgets'.doc(req.body.budgetID).collection('transactions');
+	var transactionRef = db.collection('budgets').doc(req.body.budgetID).collection('transactions');
 
 	var transactionArray = [];
 	
