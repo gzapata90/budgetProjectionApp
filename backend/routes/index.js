@@ -34,6 +34,33 @@ admin.initializeApp({
 
 var db = admin.firestore();
 
+//This is a middleware function to make sure that the user is authenticated correctly
+// router.use(function (req, res, next) {
+// 	if (!admin.auth().verifyIdToken(req.header.Authorization)) return next('router');
+// 	next();
+// })
+
+router.use(function(req,res,next) {
+  req.db = db;
+  next();
+})
+
+var getFunctions = require('./getRoutes');
+router.param('userID', getFunctions.userIDParam);
+router.param('budgetID', getFunctions.budgetIDParam);
+router.param('accountID', getFunctions.accountIDParam);
+router.param('transactionID', getFunctions.transactionIDParam);
+router.get('/:userID/budgets', getFunctions.getBudgets);
+router.get('/:budgetID', getFunctions.getBudget);
+router.get('/:budgetID/transactions', getFunctions.getTransactions);
+router.get('/:budgetID/transaction/:transactionID', getFunctions.getTransaction);
+router.get('/:budgetID/account/:accountID', getFunctions.getAccount);
+router.get('/:budgetID/transactionRange/', getFunctions.getTransactionRange);
+
+var deleteFunctions = require('./deleteRoutes');
+router.delete('/:budgetID/transaction/:transactionID', deleteFunctions.deleteTransaction);
+router.delete('/:budgetID', deleteFunctions.deleteBudget);
+
 /* GET home page. */
 router.get('/', function(req, res, next) {
   //This is basically here so that we can check to make sure the app is running still
