@@ -55,6 +55,7 @@ router.get('/:budgetID', getFunctions.getBudget);
 router.get('/:budgetID/transactions', getFunctions.getTransactions);
 router.get('/:budgetID/transaction/:transactionID', getFunctions.getTransaction);
 router.get('/:budgetID/account/:accountID', getFunctions.getAccount);
+//This route should be called with query params: ?startDate=[Date]&endDate=[Date]
 router.get('/:budgetID/transactionRange/', getFunctions.getTransactionRange);
 
 var deleteFunctions = require('./deleteRoutes');
