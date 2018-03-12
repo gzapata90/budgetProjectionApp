@@ -58,7 +58,6 @@ export class ActivityComponent implements OnInit {
         }
       }
       this.account.balance = tempBalance;
-      this.transactions.reverse();
    });
   }
 }

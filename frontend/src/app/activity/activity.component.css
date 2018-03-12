@@ -7,8 +7,10 @@
     border-radius: 20px;
 }
 
-.activity-transaction-list-item-label {
-	font-size: 15px;
+@media(min-width: 600px) {
+	.activity-transaction-list-item-label {
+		font-size: 15px;
+	}
 }
 
 .activity-transaction-list-item {
@@ -27,6 +29,7 @@
     border-bottom: solid 1px #afafaf;
     height: 35px;
     line-height: 35px;
+    overflow: hidden;
 }
 
 .activity-transaction-list-item span:last-child {
