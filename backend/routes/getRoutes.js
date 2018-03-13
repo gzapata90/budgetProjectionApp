@@ -132,12 +132,12 @@ var getTransactionRange = function (req, res, next) {
 
 	var transactionArray = [];
 
-	transactionRef.where("Start date", '>=', req.query.startDate).get()
+	transactionRef.where("Start date", '<=', req.query.endDate).get()
 		.then(function (querySnapshot) {
 			querySnapshot.forEach(function (doc) {
 				//doc should be a map
 				var testEnd = doc.get("End date");
-				if (testEnd <= req.query.endDate) {
+				if (testEnd >= req.query.startDate) {
 					transactionArray.push(doc.data());
 				}
 			});
