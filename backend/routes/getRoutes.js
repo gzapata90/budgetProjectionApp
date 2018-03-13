@@ -22,13 +22,14 @@ var getBudgets = function (req, res, next) {
 
 	}).catch(function (error) {
 		console.log("Error getting documents: ", error);
+		return res.status(500);
 	}); //end of budget collection 
 
 };
 //This route expects the caller to pass in the budgetID of the budget 
 //that they would like for us to retrieve
 //it then takes that ID and acceses the database and returns the data on that 
-//budget as a map
+//budget as a map:
 // router.get('/budgetID', 
 var getBudget = function (req, res, next) {
 	var budgetRef = req.db.collection('budgets').doc(req.body.budgetID);

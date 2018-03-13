@@ -79,10 +79,14 @@ var deleteBudget = function(req,res,next) {
 		budgetRef.get().then(doc => {
 			if( !doc.exists) {
 				console.log('Delete was succesful');
+				res.status(200);
+				return;
 			} else {
 				console.log('There was an error deleting');
+				return res.status(500);
 			}.catch(err => {
-				console.log('Error getting document: ', err); 
+				console.log('Error getting document: ', err);
+				return res.status(500); 
 			});
 		});
 	})
