@@ -33,8 +33,27 @@ var createUser = function(req, res, next) {
 	});
 };
 
+//This function takes in a budgetID and all of the information that is needed
+//to create a single transaction for that budget and adds it to the correct
+//budget
 var createTransaction = function(req, res, next) {
-
+	var collectionRef = db.collection('budgets').doc(req.body.budgetID).collection('transactions');
+	
+	collectionRef.add({
+		End date: req.body.endDate,
+		Start date: req.body.startDate,
+		accountID: req.body.accountID, //this may change
+		amount: req.body.amount,
+		description: req.body.description,
+		interval:, req.body.interval
+	})
+	.then(function(docRef) {
+		console.log("Transaction written with ID: ", docRef.id);
+		return res.status(200);
+	})
+	.catch(function(error) {
+		console.error("Error adding transaction: ", error);
+	});
 };
 
 var changeGoal = function (req, res, next) {
