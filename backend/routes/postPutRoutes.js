@@ -3,6 +3,7 @@
 // for the new user
 var createUser = function(req, res, next) {
 	var date = new Date.now();
+	//first create the budget and populate with fake data
 	db.collection('budgets').add({
 		description: "temp",
 		name: "temp",
@@ -13,6 +14,7 @@ var createUser = function(req, res, next) {
 	})
 	.then(function(docRef) {
 		console.log("Budget Written with ID: ",docRef.id);
+		//after the budget has been created we need to create an account
 		db.collection('budgets').doc(docRef.id).collection('accounts').add({
 			name: "temp",
 			description: "temp",
@@ -53,11 +55,27 @@ var createTransaction = function(req, res, next) {
 	})
 	.catch(function(error) {
 		console.error("Error adding transaction: ", error);
+		return res.status(500);
 	});
 };
 
+//This function takes in a budgetID of the budget that you would like to
+//modify and the goal that you would like to set it too. Returns a 200
+//if the goal was updated succesfully
 var changeGoal = function (req, res, next) {
-
+	var budgetRef = db.collection('budgets').doc(req.body.budgetID);
+	
+	cityRef.set({
+		goal: req.body.goal
+	}, (merge: true })
+	.then(function() {
+		console.log("Goal succesfully updated for budget: ",req.body.budgetID);
+		return res.status(200);
+	})
+	.catch(function(error) {
+		console.error)"Error while changing the goal: ",error);
+		return res.status(500);
+	});
 };
 
 var changeBudgetInfo = function (req, res, next) {
