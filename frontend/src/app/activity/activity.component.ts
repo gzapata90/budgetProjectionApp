@@ -10,14 +10,9 @@ export class ActivityComponent implements OnInit {
   userName: string;
   budget: {budgetId: string, createDate: string, description: string, goal: number, name: string, uidOfOwner: string};
   account: {balance: number, accountId: string, description: string};
-  transactions: [{amount: number, date: string, accountID: string, description: string, type: string}];
-  transactionLog: [{amount: number, date: string, accountID: string, description: string, type: string, balance: number}];
+  transactions: [{amount: number, date: string, accountID: string, description: string, interval: number}];
+  transactionLog: [{amount: number, date: string, accountID: string, description: string, interval: number}];
   private sub: any;
-  chartData = [];
-  chartLabels = [];
-  onChartClick(event) {
-    console.log(event);
-  }
 
   constructor(private route: ActivatedRoute) {}
 
@@ -29,7 +24,7 @@ export class ActivityComponent implements OnInit {
       //temp variables
       this.budget = {budgetId: "", createDate: "", description: "", goal: 0, name: "", uidOfOwner: ""};
       this.budget.budgetId = "budgetid";
-      this.budget.createDate = "2/28/2018";
+      this.budget.createDate = "8/28/2017";
       this.budget.description = "budget description";
       this.budget.goal = 1000;
       this.budget.name = "My Budget";
@@ -38,25 +33,66 @@ export class ActivityComponent implements OnInit {
       this.account.balance = 500;
       this.account.accountId = "accountId";
       this.account.description = "account description";
-      this.transactions = [{amount: this.account.balance, date: this.budget.createDate, accountID: this.account.accountId, description: "Starting Balance", type: "deposit"}];
-      this.transactions.push({amount: 100, date: "5/6/2018", accountID: "accountId", description: "I bought tacos", type: "withdraw"});
-      this.transactions.push({amount: 200, date: "5/7/2018", accountID: "accountId", description: "Little Caesars All Day", type: "withdraw"});
-      this.transactions.push({amount: 1000, date: "5/8/2018", accountID: "accountId", description: "Paycheck", type: "deposit"});
-      this.transactions.push({amount: 500, date: "5/8/2018", accountID: "accountId", description: "Paycheck", type: "withdraw"});
-      this.transactions.push({amount: 500, date: "5/10/2018", accountID: "accountId", description: "Rent", type: "withdraw"});
-      this.transactions.push({amount: 300, date: "5/10/2018", accountID: "accountId", description: "Gift", type: "deposit"});
-      this.transactions.push({amount: 600, date: "5/12/2018", accountID: "accountId", description: "Bonus", type: "deposit"});
+      this.transactions = [{amount: this.account.balance, date: this.budget.createDate, accountID: this.account.accountId, description: "Starting Balance", interval: 0}];
+      this.transactions.push({amount: -100, date: "11/6/2017", accountID: "accountId", description: "I bought tacos", interval: 0});
+      this.transactions.push({amount: -200, date: "12/7/2017", accountID: "accountId", description: "Little Caesars All Day", interval: 0});
+      this.transactions.push({amount: 1000, date: "12/8/2017", accountID: "accountId", description: "Paycheck", interval: 28});
+      this.transactions.push({amount: 500, date: "12/8/2017", accountID: "accountId", description: "Overtime", interval: 60});
+      this.transactions.push({amount: -500, date: "12/10/2017", accountID: "accountId", description: "Rent", interval: 30});
+      this.transactions.push({amount: -300, date: "1/10/2018", accountID: "accountId", description: "Gift", interval: 0});
+      this.transactions.push({amount: 600, date: "2/12/2018", accountID: "accountId", description: "Bonus", interval: 0});
+      this.transactions.push({amount: 600, date: "3/12/2018", accountID: "accountId", description: "Sell Tacos", interval: 10});
       //end tempvariables
 
+      //helper function: converts string date to date object
+      function parseDate(str) {
+	   	var mdy = str.split('/');
+	   	return new Date(mdy[2], mdy[0]-1, mdy[1]);
+	  }
+
+	  //helper function: returns number of days between two dates
+	  function datediff(first, second) {  
+	    return Math.round((second-first)/(1000*60*60*24));
+      }
+
+      //calculates current balance and adds recursive transactions
+      let today = new Date();
       let tempBalance = 0;
       for (let transaction of this.transactions) {
-        if (transaction.type == "withdraw") {
-          tempBalance -= transaction.amount;
-        }
-        else if (transaction.type == "deposit") {
+      	  if (this.transactionLog == undefined) {
+      	  	this.transactionLog = [{amount: transaction.amount, date: transaction.date, accountID: transaction.accountID, description: transaction.description, interval: transaction.interval}];
+      	  }
+      	  else {
+			this.transactionLog.push({amount: transaction.amount, date: transaction.date, accountID: transaction.accountID, description: transaction.description, interval: transaction.interval}); 
+      	  }
           tempBalance += transaction.amount;
-        }
+      	  if (transaction.interval > 0) { 
+      	  	let startDate = parseDate(transaction.date);
+			let occurances = ( Math.floor(datediff(startDate, today) / transaction.interval ) );
+			let tempDate;
+			for (let i = 0; i < occurances; i++) {
+				startDate.setDate(startDate.getDate() + transaction.interval);
+				tempDate = (startDate.getMonth() + 1) + '/' + (startDate.getDate()) + '/' + (startDate.getFullYear());
+				this.transactionLog.push({amount: transaction.amount, date: tempDate, accountID: transaction.accountID, description: transaction.description, interval: transaction.interval});
+				tempBalance += transaction.amount;
+			}
+      	  }
       }
+
+      //sorts transaction list by date
+      this.transactionLog.sort((a,b) => {
+      	let aDate = parseDate(a.date);
+      	let bDate = parseDate(b.date);
+      	if (aDate > bDate) {
+      		return 1;
+      	}
+      	if (aDate < bDate) {
+      		return -1;
+      	}
+      	return 0;
+      });
+
+      //sets current balace according to transactions
       this.account.balance = tempBalance;
    });
   }
