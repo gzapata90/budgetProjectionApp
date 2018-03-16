@@ -78,7 +78,29 @@ var changeGoal = function (req, res, next) {
 	});
 };
 
+//This function takes in the budgetID of the budget that needs to be changed
+//and all of the information that will be changed in the budget
 var changeBudgetInfo = function (req, res, next) {
+	var cityRef = db.collection('budgets').doc(req.body.budgetID);
+	
+	var docData = {};
+	if (req.body.description) {
+		docData.push({description: req.body.description});
+	}
+	if (req.body.name) {
+		docData.push({name: req.body.name});
+	{
+	if(req.body.goal) {
+		docData.push({goal: req.body.goal});
+	}
+
+	cityRef.set({docData},{merge: true}).then(function() {
+		console.log("Budget succesfully updated");
+		return res.status( 200 );
+	})
+	.catch(function(error) {
+		console.error("Error updating document: ", error);	
+	});
 
 };
 
