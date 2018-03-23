@@ -65,7 +65,7 @@ var createTransaction = function(req, res, next) {
 var changeGoal = function (req, res, next) {
 	var budgetRef = db.collection('budgets').doc(req.body.budgetID);
 	
-	cityRef.set({
+	budgetRef.set({
 		goal: req.body.goal
 	}, (merge: true })
 	.then(function() {
@@ -108,7 +108,7 @@ var changeBudgetInfo = function (req, res, next) {
 var changeAccountInfo = function(req, res, next) {
 	var accountRef = db.collection('budgets').doc(req.body.budgetID).collection('accounts').doc(req.body.accountID);
 
-	var docDate = {};
+	var docData = {};
 
 	if (req.body.description) {
 		docData.push({description: req.body.description});
