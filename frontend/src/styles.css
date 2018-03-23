@@ -18,6 +18,12 @@ h1{
 
 input{
     padding-left: .5rem;
+    border-radius: 1rem;
+    height: 4rem;
+    width: 90%;
+    max-width: 30rem;
+    margin-top: 2rem;
+    border: none;
 }
 
 input:focus,
