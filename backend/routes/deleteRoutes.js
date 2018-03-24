@@ -83,10 +83,10 @@ var deleteBudget = function(req,res,next) {
 				return;
 			} else {
 				console.log('There was an error deleting');
-				return res.status(500);
+				return res.status(500).end();
 			}.catch(err => {
 				console.log('Error getting document: ', err);
-				return res.status(500); 
+				return res.status(500).end(); 
 			});
 		});
 	})

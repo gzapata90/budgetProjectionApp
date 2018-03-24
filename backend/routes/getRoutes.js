@@ -13,7 +13,7 @@ var getBudgets = function (req, res, next) {
 		//if the first branch executes we have a problem
 		if (budgetsArray.length < 1) {
 			console.log("BudgetsArray was 0, we have a problem with either not creating a budget for this user, not saving the UID correctly in the budget, not retrieving correctly, or deleted a budget without deleting a user");
-			return res.status(500);
+			return res.status(500).end();
 		}
 		else {
 			console.log("Sending a budgetsArray with length: ", budgetsArray.length);
@@ -22,7 +22,7 @@ var getBudgets = function (req, res, next) {
 
 	}).catch(function (error) {
 		console.log("Error getting documents: ", error);
-		return res.status(500);
+		return res.status(500).end();
 	}); //end of budget collection 
 
 };
@@ -42,11 +42,11 @@ var getBudget = function (req, res, next) {
 		} else {
 			//document was not found
 			console.log("No document found with that budgetID");
-			return res.status(404);
+			return res.status(404).end();
 		}
 	}).catch(function (error) {
 		console.log("Error Getting document: ", error);
-		return res.status(500);
+		return res.status(500).end();
 	});
 };
 
@@ -64,11 +64,11 @@ var getTransaction = function (req, res, next) {
 			return res.status(200).json(doc.data());
 		} else {
 			console.log("No document found with that transactionID")
-			return res.status(404);
+			return res.status(404).end();
 		}
 	}).catch(function (error) {
 		console.log("Error getting document: ".error);
-		return res.status(500);
+		return res.status(500).end();
 	});
 };
 
@@ -83,18 +83,18 @@ var getTransactions = function (req, res, next) {
 
 	transactionsRef.get().then(function (querySnapshot) {
 		querySnapshot.forEach(function (doc) {
-			transactionArray.push(doc.data);
+			transactionArray.push(doc.data());
 		});
 		if (transactionArray.length < 1) {
 			console.log("No transactions found, either no transactions have been added, transactions were not retrieved correctlly, or The budgetID was wrong");
-			return res.status(500);
+			return res.status(500).end();
 		}
 		console.log("Sending an array of transactions with length: ", transactionArray.length);
 		return res.status(200).json(transactionArray);
 	})
 		.catch(function (error) {
 			console.log("Error getting documents: ", error);
-			return res.status(500);
+			return res.status(500).end();
 		});
 };
 
@@ -114,12 +114,12 @@ var getAccount = function (req, res, next) {
 		} else {
 			//document not found
 			console.log("No document was found with that accountID")
-			return res.status(404);
+			return res.status(404).end();
 		}
 
 	}).catch(function (error) {
 		console.log("Error Getting document: ", error);
-		return res.status(500);
+		return res.status(500).end();
 	});
 };
 
@@ -132,26 +132,25 @@ var getTransactionRange = function (req, res, next) {
 	var transactionRef = req.db.collection('budgets').doc(req.body.budgetID).collection('transactions');
 
 	var transactionArray = [];
-
-	transactionRef.where("Start date", '<=', req.query.endDate).get()
+	transactionRef.where("startDate", '<=', req.query.endDate).get()
 		.then(function (querySnapshot) {
 			querySnapshot.forEach(function (doc) {
 				//doc should be a map
-				var testEnd = doc.get("End date");
+				var testEnd = doc.get("endDate");
 				if (testEnd >= req.query.startDate) {
 					transactionArray.push(doc.data());
 				}
 			});
 			if(transactionArray.length < 1) {
 				console.log("No transactions matched the range?");
-				return res.status(404);
+				return res.status(404).end();
 			}
 			console.log("Sending back an array of transactions with length: ", transactionArray.length);
 			return res.status(200).json(transactionArray);
 		})
 		.catch(function (error) {
 			console.log("Error getting documents: ", error);
-			return res.status(500);
+			return res.status(500).end();
 		});
 
 	return transactionArray;

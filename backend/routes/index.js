@@ -62,26 +62,17 @@ var deleteFunctions = require('./deleteRoutes');
 router.delete('/:budgetID/transaction/:transactionID', deleteFunctions.deleteTransaction);
 router.delete('/:budgetID', deleteFunctions.deleteBudget);
 
+var postPutFunctions = require('./postPutRoutes');
+router.post('/user', postPutFunctions.createUser);
+router.post('/:budgetID/transaction', postPutFunctions.createTransaction);
+router.put('/:budgetID', postPutFunctions.changeBudgetInfo)
+router.put('/:budgetID/account', postPutFunctions.changeAccountInfo)
+router.put('/:budgetID/goal', postPutFunctions.changeGoal)
+
 /* GET home page. */
 router.get('/', function(req, res, next) {
   //This is basically here so that we can check to make sure the app is running still
   res.status(200).send("<html><body><h1>Hello!</h1></body></html>");
 });
-
-router.post('/createUser', function(req,res,next) {
-  //This should be updated to create a budget and starter account for the user
-
-  // admin.auth().createUser({
-  //   email: req.body.email,
-  //   password: req.body.password
-  // })
-  //   .then(function(userRecord) {
-  //     console.log("Successfully created new user:", userRecord.uid);
-  //   })
-  //   .catch(function(error) {
-  //     console.log("error creating new user:", error);
-  //   })
-});
-
 
 module.exports = router;
