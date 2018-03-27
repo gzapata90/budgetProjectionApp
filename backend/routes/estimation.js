@@ -131,6 +131,8 @@ var estimate = function estimation (req, res, next) {
 	var balanceAtStart = balance + calculateBeforeStart(transactionArray, currentDate);
 	var laterTransactions = prepareTransactions(transactionArray, currentDate);
 	var daysSinceCurrentDate = 0;
+	//This constant is so we can change how many days till the failsafe
+	const limit = 1825;
 	while( balance <= goal ) {
 		for each (transaction in transactionArray) {
 			transaction.daysRemaining = transaction.daysRemaining -1;
@@ -138,7 +140,7 @@ var estimate = function estimation (req, res, next) {
 			if(transaction.daysTillNextTransaction == 0) {
 				balance = balance + transaction.amount;
 				transaction.daysTillNextTransaction = transaction.interval
-			}
+			} //If the transaction will not occur again remove it from the array
 			if (transaction.daysRemaining ==0) {
 				var index = transactionArray,indexOf(transaction);
 				transactionArray.splice(index,1);
@@ -146,9 +148,14 @@ var estimate = function estimation (req, res, next) {
 		}
 		daysSinceCurrentDate = daysSincecurrentDate +1;
 		//have the failsafe here 
-		if (daysSinceCurrentDate > 1825) {
+		if (daysSinceCurrentDate > limit) {
 			//goal cant be reached in 5 years
+			return.status(200).json("The goal will not be reached within 5 years of the current date");
 		}
 	}
 	//here is where you return the new date
+	//first conver days into miliseconds
+	var millisecondsSinceQuery = parseInt(parseInt(parseInt(parseInt(daysSinceCurrentDays * 24)*60)*60)*1000);
+	var tempDate = currentDate + millisecondsSinceQuery
+	return.status(200).json(tempDate);
 };
