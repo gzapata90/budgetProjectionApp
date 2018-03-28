@@ -121,7 +121,7 @@ var estimate = function estimation (req, res, next) {
 	//We only need to access the account to get get the balance
 	var accountsRef = req.db.collection('budgets').doc(req.body.budgetID).collection('accounts');
 	//create the current date as a timestamp to be passed to helper functions
-	var currentDate = Date.now();
+	var currentDate = Date.now(); //we may need to floor this to the day
 	var transactionArray = retrieveAllTransactions(transactionRef);
 	var goal = retrieveGoal(budgetRef);
 	var balance = retrieveAllBalances(accountRef);
@@ -153,8 +153,9 @@ var estimate = function estimation (req, res, next) {
 		}
 	}
 	//here is where you return the new date
-	//first conver days into miliseconds
+	//first convert days into miliseconds
 	var millisecondsSinceQuery = parseInt(parseInt(parseInt(parseInt(daysSinceCurrentDays * 24)*60)*60)*1000);
+	//Add the miliseconds to the time the query started and we should get the date the goal will be reached
 	var tempDate = currentDate + millisecondsSinceQuery
 	return.status(200).json(tempDate);
 };
