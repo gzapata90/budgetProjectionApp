@@ -6,7 +6,6 @@
 
 //This function is a helper function for the goal estimation function that takes the budgetID and return the array of transactions
 function retrieveAllTransactions (transactionRef) {
-	//var transactionsRef = req.db.collections('budgets').doc(budgetID).collection('transactions');
 	var transactionArray[];
 
 	transactionsRef.get().then(function (querySnapshot) {
@@ -113,7 +112,7 @@ function prepareTransactions (transactionArray, queryDate) {
 }
 
 //This is a function that will take in budgetID for which to do estimation 
-//it will return how long it will take to reach the goal, or if you will ever reach zero in the course to get your goal
+//it will return how long it will take to reach the goal (in miliseconds since the epoch), or if you will ever reach zero in the course to get your goal
 //or it will return that the goal cannot be achieved with in the next (5?) years
 var estimate = function estimation (req, res, next) {
 	//these refs are created to be passed into the helper functions above
@@ -146,7 +145,7 @@ var estimate = function estimation (req, res, next) {
 				transactionArray.splice(index,1);
 			}
 		}
-		daysSinceCurrentDate = daysSincecurrentDate +1;
+		daysSinceCurrentDate = daysSinceCurrentDate +1;
 		//have the failsafe here 
 		if (daysSinceCurrentDate > limit) {
 			//goal cant be reached in 5 years
