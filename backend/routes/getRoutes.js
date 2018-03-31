@@ -99,7 +99,7 @@ var getTransactions = function (req, res, next) {
 };
 
 //This route expects the caller to pass in an accountID and a budgetID which
-//it will thean use to access the specified account from the specified budget
+//it will then use to access the specified account from the specified budget
 //and return the information for that specific account as a map
 // router.get('/budgetID/accountID', 
 var getAccount = function (req, res, next) {

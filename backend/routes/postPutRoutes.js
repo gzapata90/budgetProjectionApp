@@ -24,7 +24,11 @@ var createUser = function(req, res, next) {
 		})
 		.then(function(newDocRef) {
 			console.log("Account written to budget with ID: ", newDocRef.id);
-			return res.status(200).end();
+			let retObj = {
+				budgetID: docRef.id,
+				accountID: newDocRef.id
+			}
+			return res.status(200).json(retObj).end();
 		})
 		.catch(function(error) {
 			console.error("Error adding account: ", error);
@@ -53,7 +57,7 @@ var createTransaction = function(req, res, next) {
 	})
 	.then(function(docRef) {
 		console.log("Transaction written with ID: ", docRef.id);
-		return res.status(200).end();
+		return res.status(200).json(docRef).end();
 	})
 	.catch(function(error) {
 		console.error("Error adding transaction: ", error);
