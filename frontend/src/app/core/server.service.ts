@@ -15,15 +15,20 @@ export class ServerService {
   };
   
   constructor(private http: HttpClient, private afAuth: AngularFireAuth) {
-    afAuth.auth.currentUser.getIdToken(true).then(token => {
-      this.httpOptions.headers = this.httpOptions.headers.set('Authorization', token);
+    console.log(afAuth.auth.currentUser);
+    if(afAuth && afAuth.auth && afAuth.auth.currentUser) {
+      afAuth.auth.currentUser.getIdToken(true).then(token => {
+        this.httpOptions.headers = this.httpOptions.headers.set('Authorization', token);
+      }, error => console.warn(error));
+    } else {
+      console.warn("No current user or some other auth error?");
     }
   }
 
   // url should include the endpoint and any ids required to know what you are getting
   get(url): Observable<any> {
     console.log("inside of service get function");
-    console.log(this.http.get('Authorization'));
+    console.log("Auth Token: ", this.httpOptions.headers.get('Authorization'));
     return this.http.get(this.hostName + url, this.httpOptions);
   }
 
