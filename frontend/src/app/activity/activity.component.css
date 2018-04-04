@@ -1,5 +1,6 @@
 .activity-transaction-list {
 	list-style: none;
+	font-size: 9px;
 	margin: 0 20px;
 	padding: 0;
 	background: #efefef;
@@ -7,10 +8,25 @@
     border-radius: 20px;
 }
 
-@media(min-width: 600px) {
+@media(min-width: 650px) {
 	.activity-transaction-list-item-label {
-		font-size: 15px;
+		font-size: 16px;
 	}
+
+	.activity-transaction-list{
+		font-size: 16px;
+	}
+	.activity-wrap{
+		width: 75%;
+	}
+}
+
+.activity-wrap{
+	padding-top: 15px;
+	display: block;
+	margin-right: auto;
+	margin-left: auto;
+	
 }
 
 .activity-transaction-list-item {
