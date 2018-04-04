@@ -6,7 +6,7 @@ import { of } from 'rxjs/observable/of';
 @Injectable()
 export class ServerService {
 
-  hostName = 'http://localhost:3000/'
+  hostName = 'https://budget-projection-app.herokuapp.com'
 
   constructor(private http: HttpClient) { }
 
