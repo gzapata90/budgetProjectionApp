@@ -1,12 +1,11 @@
 {
-    "name": "budget-projection-app-root",
-    "version": "0.0.0",
-    "private": true,
-    "engines": {
-      "node": "8.9.4"
-    },
-    "scripts": {
-      "postinstall": "npm install --prefix backend"
-    }
+  "name": "budget-projection-app-root",
+  "version": "0.0.0",
+  "private": true,
+  "engines": {
+    "node": "8.9.4"
+  },
+  "scripts": {
+    "postinstall": "npm install --prefix backend"
   }
-  
+}

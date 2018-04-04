@@ -24,7 +24,7 @@ export class HomeComponent implements OnInit {
   ngOnInit() {
     this.sub = this.route.params.subscribe(params => {
       this.userName = params['user']; // (+) converts string 'id' to a number
-      
+
       // In a real app: dispatch action to load the details here.
       //temp variables
       this.budget = {budgetId: "", createDate: "", description: "", goal: 0, name: "", uidOfOwner: ""};
