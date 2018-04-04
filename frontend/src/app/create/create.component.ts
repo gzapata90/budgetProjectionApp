@@ -13,15 +13,6 @@ export class CreateComponent implements OnInit {
   constructor(private authSvc: AuthService, private router: Router,private serverService: ServerService) { }
 
   ngOnInit() {
-    this.serverService.get("/bgzBJwV4jcNTA3nbrNC8nYYbHXw2/budgets")
-    .subscribe(
-      (response) => {
-        console.log('success')
-      },
-      (error) => {
-        console.log('failure')
-      }
-    )
   }
 
   register(email: string, password1: string, password2: string) {
