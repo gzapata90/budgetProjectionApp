@@ -11,6 +11,29 @@ a{
     color: gray;
 }
 
+.main3{
+    width: 200px;
+    display: flex;
+    justify-content: space-evenly;
+}
+
+@media(min-width: 650px){
+    img{
+        margin: 0;
+        width: 200px !important;
+        height: 50px;
+    }
+
+    .logout-item{
+        margin-left: 150px;
+    }
+}
+
+img{
+    width: 50px;
+}
+
+
 svg {
     font-size: 3rem;
 }
@@ -23,8 +46,9 @@ nav{
     margin: 0 auto;
     display: flex;
     justify-content: space-around;
-    max-width: 40rem;
 }
+
+
 
 #main-app.title-only #menu {
     display: none;

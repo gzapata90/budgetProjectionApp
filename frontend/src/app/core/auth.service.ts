@@ -11,6 +11,13 @@ export class AuthService {
 
   login(email: string, password: string) {
     return this.afAuth.auth.signInWithEmailAndPassword(email, password).then(user => {
+      //This is the token that you need to use when calling the backend:
+      //You can also theoretically call afAuth.auth.currentUser.getIdToken()... to achieve the same result.
+      user.getIdToken().then(function(token) {
+        console.log(token);
+        // TODO Make sure that the app checks for a token before doing anything
+        localStorage['token'] = token;
+      })
       this.userId = user.uid;
       this.email = user.email;
       return this.userId;
