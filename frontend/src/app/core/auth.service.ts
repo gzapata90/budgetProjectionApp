@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { AngularFireAuth } from 'angularfire2/auth';
+import { User } from '@firebase/auth-types';
 
 @Injectable()
 export class AuthService {
@@ -9,27 +10,26 @@ export class AuthService {
 
   constructor(private afAuth: AngularFireAuth) { }
 
-  login(email: string, password: string) {
-    return this.afAuth.auth.signInWithEmailAndPassword(email, password).then(user => {
-      //This is the token that you need to use when calling the backend:
-      //You can also theoretically call afAuth.auth.currentUser.getIdToken()... to achieve the same result.
-      user.getIdToken().then(function(token) {
-        console.log(token);
-        // TODO Make sure that the app checks for a token before doing anything
-        localStorage['token'] = token;
-      })
+  requestToken(user: User) {
+    user.getIdToken().then(function(token) {
+      console.log("Retrieved token for newly logged in user!");
+      localStorage['token'] = token;
+    })
+  }
+
+  handleUserSuccess(user: User) {
       this.userId = user.uid;
       this.email = user.email;
+      this.requestToken(user);
       return this.userId;
-    });
+  }
+
+  login(email: string, password: string) {
+    return this.afAuth.auth.signInWithEmailAndPassword(email, password).then(this.handleUserSuccess);
   }
 
   register(email: string, password: string) {
-    return this.afAuth.auth.createUserWithEmailAndPassword(email, password).then(user => {
-      this.userId = user.uid;
-      this.email = user.email;
-      return this.userId;
-    });
+    return this.afAuth.auth.createUserWithEmailAndPassword(email, password).then(this.handleUserSuccess);
   }
 
   logout() {
