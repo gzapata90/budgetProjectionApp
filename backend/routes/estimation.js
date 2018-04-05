@@ -159,3 +159,6 @@ var estimate = function estimation (req, res, next) {
 	var tempDate = currentDate + millisecondsSinceQuery
 	return.status(200).json(tempDate);
 };
+module.exports ={
+	estimate
+};
