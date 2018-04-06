@@ -4,7 +4,7 @@ html {
 }
 
 body{
-    background: linear-gradient(#4be1f2, #0012d8);
+    background: linear-gradient(#2ea0c2, #0b1d3a);
     height: 100%;
     margin: 0;
     background-repeat: no-repeat;
@@ -24,6 +24,10 @@ input{
     max-width: 30rem;
     margin-top: 2rem;
     border: none;
+}
+
+nav#menu{
+    margin-top: 10px;
 }
 
 input:focus,

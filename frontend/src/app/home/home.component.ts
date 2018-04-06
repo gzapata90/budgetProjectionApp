@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
+import { ServerService } from '../core/server.service';
 
 @Component({
   selector: 'app-home',
@@ -19,12 +20,17 @@ export class HomeComponent implements OnInit {
     console.log(event);
   }
 
-  constructor(private route: ActivatedRoute) {}
+  constructor(private route: ActivatedRoute, private serverService: ServerService ) {}
 
   ngOnInit() {
+    //Sample usage of the serverService - pull out at some point?
+    this.serverService.get('/1/budgets').subscribe(
+      res => console.log("Result: ", res),
+      error => console.warn("Error", error)
+    );
     this.sub = this.route.params.subscribe(params => {
       this.userName = params['user']; // (+) converts string 'id' to a number
-      
+
       // In a real app: dispatch action to load the details here.
       //temp variables
       this.budget = {budgetId: "", createDate: "", description: "", goal: 0, name: "", uidOfOwner: ""};

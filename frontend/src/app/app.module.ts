@@ -11,6 +11,7 @@ import { environment } from '../environments/environment';
 import { LoginComponent } from './login/login.component';
 import { CreateComponent } from './create/create.component';
 import { HomeComponent } from './home/home.component';
+import { ActivityComponent } from './activity/activity.component';
 import { CoreModule } from './core/core.module';
 import { ErrorComponent } from './error/error.component';
 import { BudgetComponent } from './budget/budget.component';
@@ -20,6 +21,7 @@ const appRoutes: Routes = [
   {path: 'create', component: CreateComponent},
   {path: 'budget/:user', component: BudgetComponent},
   {path: 'home/:user', component: HomeComponent},
+  {path: 'activity/:user', component: ActivityComponent},
   {path: '', redirectTo: '/login', pathMatch: 'full'},
   {path: '**', redirectTo: '404' },
   {path: '404', component: ErrorComponent },
@@ -31,6 +33,7 @@ const appRoutes: Routes = [
     LoginComponent,
     CreateComponent,
     HomeComponent,
+    ActivityComponent,
     ErrorComponent,
     BudgetComponent
   ],
