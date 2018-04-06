@@ -1,4 +1,8 @@
 import { Component, OnInit } from '@angular/core';
+import { AuthService } from '../core/auth.service';
+import { Router } from '@angular/router';
+import { ServerService } from '../core/server.service';
+
 
 @Component({
   selector: 'app-budget',
@@ -7,9 +11,30 @@ import { Component, OnInit } from '@angular/core';
 })
 export class BudgetComponent implements OnInit {
 
-  constructor() { }
+  constructor(private authSvc: AuthService, private router: Router, private serverService: ServerService) { }
 
   ngOnInit() {
+    this.authSvc.verifyUser((uid) => {
+      this.serverService.get(`/${uid}/budgets`)
+        .subscribe(
+          (response) => {
+            console.log('success', response)
+          },
+          (error) => {
+            this.serverService.post(`/${uid}`,{'userid':uid})
+            .subscribe(
+              (response) =>{
+                console.log('new account created')
+              },
+              (error) =>{
+                console.log('cannot create account')
+              }
+            )
+          }
+        )
+    }, () => {
+      this.router.navigate(['/login']);
+    })
   }
 
 }
