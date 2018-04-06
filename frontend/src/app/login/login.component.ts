@@ -19,7 +19,7 @@ export class LoginComponent implements OnInit {
 
     this.authSvc.login(email, password)
       .then(userId => {
-        console.log('logged in');
+        console.log('logged in', userId);
         this.router.navigate([`home/${userId}`]);
       })
       .catch(err => {
