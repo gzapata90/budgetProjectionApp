@@ -36,12 +36,10 @@ export class AuthService {
     return this.afAuth.auth.signOut();
   }
 
-  verifyUser(userCall,noUserCall) {
+  verifyUser(userCall) {
     this.afAuth.auth.onAuthStateChanged(user=>{
       if (user){
         userCall(user.uid)
-      }else{
-        noUserCall()
       }
     })
   }

@@ -50,93 +50,82 @@ export class ActivityComponent implements OnInit {
 
       
 
-    this.authSvc.verifyUser((uid) => {
-        //Gets budget object
-        this.serverService.get('/' + uid + '/budgets').subscribe(
-            res => {
-              console.log("Result: ", res);
-              this.budget = res[0];
-              this.budget.creationDate = new Date(this.budget.creationDate);
-              let startingTransaction;
+      this.authSvc.verifyUser((uid) => {
+          //Gets budget object
+          this.serverService.get('/' + uid + '/budgets').subscribe(
+              res => {
+                console.log("Result: ", res);
+                this.budget = res[0];
+                this.budget.creationDate = new Date(this.budget.creationDate);
+                let startingTransaction;
 
-              //Gets account object
-              this.serverService.get('/sZjRUvJOVmd0mq33Q9pW/account/2FPfC9ALIzc8MiYeZ1v1').subscribe(
-                  res => {
-                    console.log("Result: ", res);
-                    this.account = res;
-                    startingTransaction = {amount: this.account.balance, endDate: this.budget.creationDate, startDate: this.budget.creationDate.toLocaleDateString(), accountID: '2FPfC9ALIzc8MiYeZ1v1', description: "Starting Balance", interval: 0};
+                //Gets account object
+                this.serverService.get('/sZjRUvJOVmd0mq33Q9pW/account/2FPfC9ALIzc8MiYeZ1v1').subscribe(
+                    res => {
+                      console.log("Result: ", res);
+                      this.account = res;
+                      startingTransaction = {amount: this.account.balance, endDate: this.budget.creationDate, startDate: this.budget.creationDate.toLocaleDateString(), accountID: '2FPfC9ALIzc8MiYeZ1v1', description: "Starting Balance", interval: 0};
 
-                    //Gets transaction objects
-                      this.serverService.get('/sZjRUvJOVmd0mq33Q9pW/transactions').subscribe(
-                        res => {
-                          console.log("Result: ", res);
-                          this.transactions = res;
-                          this.transactions.push(startingTransaction);
-                          //calculates current balance and adds recursive transactions
-                          let today = new Date();
-                          let tempBalance = 0;
-                          this.transactionLog = [];
-                          for (let transaction of this.transactions) {
-                   
-                            this.transactionLog.push({amount: transaction.amount, date: new Date(transaction.startDate).toLocaleDateString(), accountID: transaction.accountID, description: transaction.description, interval: transaction.interval}); 
-                    
-                            tempBalance += transaction.amount;
-                            if (transaction.interval > 0) {
-                              let startDate = new Date(transaction.startDate);
-                              let endDate = new Date(transaction.endDate);
-                              if (datediff(today, endDate) > 0) {
-                                endDate = today;
+                      //Gets transaction objects
+                        this.serverService.get('/sZjRUvJOVmd0mq33Q9pW/transactions').subscribe(
+                          res => {
+                            console.log("Result: ", res);
+                            this.transactions = res;
+                            this.transactions.push(startingTransaction);
+                            //calculates current balance and adds recursive transactions
+                            let today = new Date();
+                            let tempBalance = 0;
+                            this.transactionLog.length = 0;
+                            for (let transaction of this.transactions) {
+                     
+                              this.transactionLog.push({amount: transaction.amount, date: new Date(transaction.startDate).toLocaleDateString(), accountID: transaction.accountID, description: transaction.description, interval: transaction.interval}); 
+                      
+                              tempBalance += transaction.amount;
+                              if (transaction.interval > 0) {
+                                let startDate = new Date(transaction.startDate);
+                                let endDate = new Date(transaction.endDate);
+                                if (datediff(today, endDate) > 0) {
+                                  endDate = today;
+                                }
+                                let occurances = ( Math.floor(datediff(startDate, today) / transaction.interval ) );
+                                console.log(transaction)
+                                console.log(datediff(startDate, today));
+                                let tempDate;
+                                for (let i = 0; i < occurances; i++) {
+                                  startDate.setDate(startDate.getDate() + transaction.interval);
+                                  tempDate = (startDate.getMonth() + 1) + '/' + (startDate.getDate()) + '/' + (startDate.getFullYear());
+                                  this.transactionLog.push({amount: transaction.amount, date: tempDate, accountID: transaction.accountID, description: transaction.description, interval: transaction.interval});
+                                  tempBalance += transaction.amount;
+                                }
                               }
-                              let occurances = ( Math.floor(datediff(startDate, today) / transaction.interval ) );
-                              console.log(transaction)
-                              console.log(datediff(startDate, today));
-                              let tempDate;
-                              for (let i = 0; i < occurances; i++) {
-                                startDate.setDate(startDate.getDate() + transaction.interval);
-                                tempDate = (startDate.getMonth() + 1) + '/' + (startDate.getDate()) + '/' + (startDate.getFullYear());
-                                this.transactionLog.push({amount: transaction.amount, date: tempDate, accountID: transaction.accountID, description: transaction.description, interval: transaction.interval});
-                                tempBalance += transaction.amount;
+                            }
+
+                            //sorts transaction list by date
+                            this.transactionLog.sort((a,b) => {
+                              let aDate = parseDate(a.date);
+                              let bDate = parseDate(b.date);
+                              if (aDate > bDate) {
+                                return 1;
                               }
-                            }
-                          }
+                              if (aDate < bDate) {
+                                return -1;
+                              }
+                              return 0;
+                            });
 
-                          //sorts transaction list by date
-                          this.transactionLog.sort((a,b) => {
-                            let aDate = parseDate(a.date);
-                            let bDate = parseDate(b.date);
-                            if (aDate > bDate) {
-                              return 1;
-                            }
-                            if (aDate < bDate) {
-                              return -1;
-                            }
-                            return 0;
-                          });
-
-                          //sets current balace according to transactions
-                          this.account.balance = tempBalance;
-                        },
-                        error => console.warn("Error", error)
-                    );
-                  },
-                  error => console.warn("Error", error)
-              );
-            },
-            error => console.warn("Error", error)
-        ), () => {
-          this.router.navigate(['/login']);
-        });
-
-        
-
-        
-   });
-
-
-         
-
+                            //sets current balace according to transactions
+                            this.account.balance = tempBalance;
+                          },
+                          error => console.warn("Error", error)
+                      );
+                    },
+                    error => console.warn("Error", error)
+                );
+              },
+              error => console.warn("Error", error)
+          )
+      });
     });
-
   }
 }
 
