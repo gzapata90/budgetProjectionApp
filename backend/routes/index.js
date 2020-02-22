@@ -104,6 +104,11 @@ router.put('/:budgetID/account', postPutFunctions.changeAccountInfo)
 //This changes the goal amount for a budget and doesn't return anything
 router.put('/:budgetID/goal', postPutFunctions.changeGoal)
 
+
+var estimationFunctions = require('./estimation');
+//This route is utilized to estimate when a goal will be reached
+router.get ('/:budgetID/estimation'estimationFunctions.estimate);
+
 /* GET home page. */
 router.get('/', function(req, res, next) {
   //This is basically here so that we can check to make sure the app is running still
